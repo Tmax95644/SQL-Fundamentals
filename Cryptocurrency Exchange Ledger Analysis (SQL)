@@ -1,0 +1,181 @@
+# Cryptocurrency Exchange Ledger Analysis (SQL)
+
+## 📌 Project Overview
+
+Fiddy Cent is a digital currency exchange headquartered in Neo Tokyo, brokering exchanges of Bitcoin (BIT), Ethereum (ETH), Bitcoin Cash (BCC), and Litecoin (LTC) against fiat currencies across ~50 countries.
+
+This project analyzes **January 2018 transaction ledger data** using SQL aggregate functions to better understand transaction volumes, currency dominance, and daily trends in money flowing into and out of the exchange.
+
+The analysis focuses on a single `transactions` table containing both **money-in (buy)** and **money-out (sell)** records.
+
+---
+
+## 🗂 Dataset Description
+
+**Table:** `transactions`
+
+| Column      | Description                                |
+| ----------- | ------------------------------------------ |
+| `id`        | Unique transaction ID                      |
+| `user_id`   | User identifier                            |
+| `date`      | Transaction date (YYYY-MM-DD)              |
+| `currency`  | Cryptocurrency traded (BIT, ETH, BCC, LTC) |
+| `money_in`  | USD value of cryptocurrency purchased      |
+| `money_out` | USD value of cryptocurrency sold           |
+
+Note: Each transaction records either `money_in` **or** `money_out`.
+
+---
+
+## 🧠 Analytical Questions
+
+1. What columns exist in the transactions table?
+2. What is the total value of money flowing **into** the exchange?
+3. What is the total value of money flowing **out** of the exchange?
+4. Does Bitcoin dominate transaction activity?
+5. What was the largest transaction and was it a buy or sell?
+6. What is the average money-in amount for Ethereum transactions?
+7. How do average daily money-in and money-out values change over time?
+
+---
+
+## ⚙️ SQL Queries & Results
+
+### 1️⃣ Inspect the Full Table
+
+```sql
+SELECT *
+FROM transactions;
+```
+
+**Result:** Confirmed table structure and column names.
+
+---
+
+### 2️⃣ Total Money In (USD)
+
+```sql
+SELECT SUM(money_in) AS total_transactions_in
+FROM transactions;
+```
+
+**Result:** **$17,173** total money flowed into the exchange.
+
+---
+
+### 3️⃣ Total Money Out (USD)
+
+```sql
+SELECT SUM(money_out) AS total_transactions_out
+FROM transactions;
+```
+
+**Result:** **$33,417** total money flowed out of the exchange.
+
+---
+
+### 4️⃣ Bitcoin Transaction Dominance
+
+```sql
+SELECT COUNT(*) AS total_transactions
+FROM transactions;
+```
+
+```sql
+SELECT COUNT(*) AS total_bitcoin_transactions
+FROM transactions
+WHERE currency LIKE '%BIT%';
+```
+
+**Result:**
+
+* Total transactions: **100**
+* Bitcoin transactions: **42**
+
+➡️ Bitcoin represents **42%** of all transactions.
+
+---
+
+### 5️⃣ Largest Transaction
+
+```sql
+SELECT MAX(money_in) AS largest_money_in
+FROM transactions;
+```
+
+```sql
+SELECT MAX(money_out) AS largest_money_out
+FROM transactions;
+```
+
+**Result:**
+
+* Largest money-in: **$6,000**
+* Largest money-out: **$15,047**
+
+➡️ The largest transaction was a **money-out (sell)**.
+
+---
+
+### 6️⃣ Average Ethereum Buy Value
+
+```sql
+SELECT AVG(money_in)
+FROM transactions
+WHERE currency LIKE '%ETH%';
+```
+
+**Result:** Average ETH money-in = **$131.89**
+
+---
+
+### 7️⃣ Daily Ledger Summary
+
+```sql
+SELECT 
+  date,
+  ROUND(AVG(money_in), 2) AS avg_money_in,
+  ROUND(AVG(money_out), 2) AS avg_money_out
+FROM transactions
+GROUP BY date;
+```
+
+**Result (Selected Highlights):**
+
+| Date       | Avg Money In ($) | Avg Money Out ($) |
+| ---------- | ---------------- | ----------------- |
+| 2018-01-25 | 83.60            | 2,243.43          |
+| 2018-01-28 | 136.80           | 2,059.00          |
+| 2018-01-31 | 2,073.80         | 340.20            |
+
+---
+
+## 📈 Key Insights
+
+* Bitcoin is the most frequently traded currency, accounting for **42%** of transactions.
+* Total money-out significantly exceeds money-in, indicating high sell-side activity during this period.
+* Several extreme outliers (notably LTC and BIT sells) heavily influence daily averages.
+* End-of-month activity (Jan 31) shows unusually high average money-in values, suggesting market volatility or large institutional trades.
+
+---
+
+## 🧰 Skills Demonstrated
+
+* SQL aggregate functions (`SUM`, `AVG`, `COUNT`, `MAX`)
+* Filtering with `WHERE`
+* Grouping with `GROUP BY`
+* Data formatting with `ROUND`
+* Analytical interpretation of transactional data
+
+---
+
+## 🚀 Next Improvements
+
+* Separate buy vs sell ledgers explicitly
+* Add currency-level daily breakdowns
+* Visualize trends using Power BI or Python
+* Detect and handle outliers more formally
+
+---
+
+📎 *Project completed as part of a Codecademy SQL course and adapted for portfolio presentation.*
