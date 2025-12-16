@@ -1,0 +1,162 @@
+# Lyft Trip Data Analysis (SQL)
+
+## 📌 Project Overview
+
+This project analyzes trip, rider, and vehicle data for **Lyft**, a ride-sharing platform. The primary focus is practicing **SQL joins** to combine information across multiple tables and answer practical business questions related to users, trips, and fleet operations.
+
+The analysis mirrors common real-world analytics tasks in mobility and platform companies, such as building trip logs, analysing rider behaviour, and monitoring vehicle usage.
+
+---
+
+## 🗂 Dataset Description
+
+The project uses **three relational tables**:
+
+### Table: `trips`
+
+| Column     | Description        |
+| ---------- | ------------------ |
+| `id`       | Unique trip ID     |
+| `rider_id` | Rider identifier   |
+| `car_id`   | Vehicle identifier |
+| `cost`     | Cost of the trip   |
+
+### Table: `riders`
+
+| Column        | Description       |
+| ------------- | ----------------- |
+| `id`          | Unique rider ID   |
+| `first`       | First name        |
+| `last`        | Last name         |
+| `username`    | Rider username    |
+| `total_trips` | Total trips taken |
+
+### Table: `cars`
+
+| Column            | Description           |
+| ----------------- | --------------------- |
+| `id`              | Unique car ID         |
+| `model`           | Vehicle model         |
+| `status`          | Active or inactive    |
+| `trips_completed` | Total trips completed |
+
+---
+
+## 🧠 Analytical Questions
+
+1. How are trips, riders, and cars related?
+2. How can trip records be enriched with rider and vehicle information?
+3. What is the average cost of a Lyft trip?
+4. Which riders are considered irregular users?
+5. How many cars are currently active?
+6. Which vehicles have been used the most?
+
+---
+
+## ⚙️ SQL Queries & Results
+
+### 1️⃣ Exploring the Tables
+
+```sql
+SELECT * FROM trips;
+SELECT * FROM riders;
+SELECT * FROM cars;
+```
+
+**Result:** Confirmed schema, primary keys, and relationships across tables.
+
+---
+
+### 2️⃣ Cross Join Exploration
+
+```sql
+SELECT *
+FROM riders
+CROSS JOIN cars;
+```
+
+**Result:** Produced all rider–car combinations; not useful for analysis, but helpful to understand join behaviour.
+
+---
+
+### 3️⃣ Trip Log with Rider Details (LEFT JOIN)
+
+```sql
+SELECT *
+FROM trips
+LEFT JOIN riders
+  ON trips.rider_id = riders.id;
+```
+
+**Result:** Created a complete trip log while preserving all trip records, even when rider data may be missing.
+
+---
+
+### 4️⃣ Linking Trips to Cars (INNER JOIN)
+
+```sql
+SELECT *
+FROM trips
+JOIN cars
+  ON trips.car_id = cars.id;
+```
+
+**Result:** Successfully linked each trip to the vehicle used.
+
+---
+
+### 5️⃣ Adding New Riders (UNION)
+
+```sql
+SELECT * FROM riders
+UNION
+SELECT * FROM riders2;
+```
+
+**Result:** Combined existing and new rider datasets into a unified table.
+
+---
+
+### 6️⃣ Average Trip Cost
+
+```sql
+SELECT AVG(cost) AS average_cost
+FROM trips;
+```
+
+**Result:** Calculated the average cost per Lyft trip.
+
+---
+
+### 7️⃣ Most-Used Cars
+
+```sql
+SELECT *
+FROM cars
+ORDER BY trips_completed DESC;
+```
+
+**Result:** Identified the vehicles with the highest usage, supporting maintenance and recall decisions.
+
+---
+
+## 📈 Key Insights
+
+* Joins are essential for transforming raw trip data into meaningful operational views.
+* LEFT JOINs ensure no trip data is lost when enriching with rider details.
+* INNER JOINs are ideal when only fully matched records are required.
+* Vehicle usage metrics can inform fleet maintenance and safety decisions.
+
+---
+
+## 🧰 Skills Demonstrated
+
+* Table relationships and primary keys
+* `LEFT JOIN`, `INNER JOIN`, and `CROSS JOIN`
+* Combining datasets with `UNION`
+* Aggregate functions (`AVG`)
+* Translating relational data into business insights
+
+---
+
+📎 *Project completed as part of a Codecademy SQL course and adapted for portfolio presentation.*
