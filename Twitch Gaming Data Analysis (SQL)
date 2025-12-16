@@ -1,0 +1,214 @@
+# Twitch Gaming Data Analysis (SQL)
+
+## 📌 Project Overview
+
+Twitch is the world’s leading live streaming platform for gamers, with millions of daily active users. Understanding viewer behaviour, game popularity, and engagement patterns is a core responsibility of the Twitch Data Science team.
+
+This project analyzes Twitch **stream viewing data** and **chat usage data** to uncover insights about:
+
+* Popular games and platforms
+* Viewer geography
+* Viewing behaviour over time
+* Game categorisation by genre
+* Relationships between streaming and chat activity
+
+The dataset contains **~6,000 records** split across two tables and mirrors real-world analytics challenges faced by streaming platforms.
+
+---
+
+## 🗂 Dataset Description
+
+### Table: `stream`
+
+| Column          | Description                                    |
+| --------------- | ---------------------------------------------- |
+| `time`          | Date and time of stream viewing                |
+| `device_id`     | Unique device identifier                       |
+| `login`         | User login                                     |
+| `channel`       | Streamer channel                               |
+| `country`       | Viewer country                                 |
+| `player`        | Viewing platform (site, iphone, android, etc.) |
+| `game`          | Game being streamed                            |
+| `stream_format` | Streaming quality                              |
+| `subscriber`    | Subscriber status                              |
+
+Rows: **3,000**
+
+### Table: `chat`
+
+| Column      | Description               |
+| ----------- | ------------------------- |
+| `time`      | Chat message timestamp    |
+| `device_id` | Unique device identifier  |
+| `login`     | User login                |
+| `channel`   | Streamer channel          |
+| `country`   | Viewer country            |
+| `player`    | Viewing platform          |
+| `game`      | Game associated with chat |
+
+Rows: **3,001**
+
+---
+
+## 🧠 Analytical Questions
+
+1. What games and channels dominate Twitch viewership?
+2. Which countries contribute the most viewers to top games?
+3. What platforms do viewers use to watch streams?
+4. How can games be categorised into meaningful genres?
+5. How does viewership change throughout the day?
+6. What insights can be gained by joining stream and chat data?
+
+---
+
+## ⚙️ SQL Queries & Results
+
+### 1️⃣ Initial Data Exploration
+
+```sql
+SELECT * FROM stream LIMIT 20;
+SELECT * FROM chat LIMIT 20;
+```
+
+**Result:** Confirmed schema, column names, and data types for both tables.
+
+---
+
+### 2️⃣ Unique Games & Channels
+
+```sql
+SELECT DISTINCT game FROM stream;
+SELECT DISTINCT channel FROM stream;
+```
+
+**Result:** Identified a diverse set of games, with recurring channels driving the majority of traffic.
+
+---
+
+### 3️⃣ Most Popular Games
+
+```sql
+SELECT game, COUNT(*) AS total_views
+FROM stream
+GROUP BY game
+ORDER BY total_views DESC;
+```
+
+**Result:**
+
+* **League of Legends** dominates viewership
+* Followed by **Dota 2**, **CS:GO**, and **DayZ**
+
+---
+
+### 4️⃣ League of Legends Viewer Geography
+
+```sql
+SELECT country, COUNT(*) AS viewer_count
+FROM stream
+WHERE game = 'League of Legends'
+GROUP BY country
+ORDER BY viewer_count DESC;
+```
+
+**Result:**
+
+* The **United States** is the largest viewer base
+* Strong international presence across Europe and Asia
+
+---
+
+### 5️⃣ Viewing Platforms
+
+```sql
+SELECT player, COUNT(*)
+FROM stream
+GROUP BY player
+ORDER BY COUNT(*) DESC;
+```
+
+**Result:**
+
+* Web and mobile platforms dominate
+* Significant usage across **site**, **iphone**, and **android**
+
+---
+
+### 6️⃣ Game Genre Classification
+
+```sql
+SELECT
+  game,
+  CASE
+    WHEN game IN ('League of Legends', 'Dota 2', 'Heroes of the Storm') THEN 'MOBA'
+    WHEN game = 'Counter-Strike: Global Offensive' THEN 'FPS'
+    WHEN game IN ('DayZ', 'ARK: Survival Evolved') THEN 'Survival'
+    ELSE 'Other'
+  END AS genre,
+  COUNT(*)
+FROM stream
+GROUP BY game
+ORDER BY genre;
+```
+
+**Result:**
+
+* MOBA games account for the majority of total views
+* Clear genre clustering helps simplify analysis
+
+---
+
+### 7️⃣ Viewership by Hour of Day
+
+```sql
+SELECT strftime('%H', time) AS hour,
+       COUNT(*) AS view_count
+FROM stream
+GROUP BY hour
+ORDER BY hour;
+```
+
+**Result:**
+
+* Viewership peaks between **12:00–15:00** and **18:00–22:00**
+* Lowest activity occurs in early morning hours
+
+---
+
+### 8️⃣ Joining Stream & Chat Data
+
+```sql
+SELECT *
+FROM stream
+JOIN chat
+  ON stream.device_id = chat.device_id;
+```
+
+**Result:**
+
+* Enabled combined analysis of viewing and chat behaviour
+* Demonstrates how engagement extends beyond passive viewing
+
+---
+
+## 📈 Key Insights
+
+* **League of Legends** is by far the most-watched game globally
+* Twitch viewership is highly international, with strong US dominance
+* Mobile viewing is nearly as important as desktop usage
+* Genre classification simplifies high-volume game data
+* Viewer activity follows predictable daily cycles
+
+---
+
+## 🧰 Skills Demonstrated
+
+* Multi-table querying and `JOIN`s
+* Aggregations with `COUNT` and `GROUP BY`
+* Time-based analysis using `strftime()`
+* Conditional logic with `CASE`
+* Real-world analytics thinking at scale
+
+---
+
+📎 *Project completed as part of a Codecademy SQL course and adapted for portfolio presentation.*
