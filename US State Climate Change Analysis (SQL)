@@ -1,0 +1,189 @@
+# US State Climate Change Analysis (SQL)
+
+## 📌 Project Overview
+
+This project analyzes historical **average annual temperature data** across U.S. states to explore long-term climate trends. Using SQL window functions and ranking techniques, the analysis examines how temperatures have changed over time, identifies extreme temperature years, and compares relative warmth and coldness across states.
+
+The goal is to demonstrate proficiency with **window functions**, **ranking**, and **time-based comparisons** while answering climate-related analytical questions.
+
+---
+
+## 🗂 Dataset Description
+
+**Table:** `state_climate`
+
+| Column  | Description                             |
+| ------- | --------------------------------------- |
+| `state` | U.S. state                              |
+| `year`  | Calendar year                           |
+| `tempf` | Average annual temperature (Fahrenheit) |
+| `tempc` | Average annual temperature (Celsius)    |
+
+Each row represents the average temperature across all days and regions of a given state for a specific year.
+
+---
+
+## 🧠 Analytical Questions
+
+1. How do average temperatures trend over time within each state?
+2. What are the coldest and warmest years on record?
+3. Are temperature extremes more recent or historic?
+4. Which states experience the largest year-over-year temperature changes?
+5. How do temperatures distribute when ranked into quartiles and quintiles?
+
+---
+
+## ⚙️ SQL Queries & Results
+
+### 1️⃣ Data Exploration
+
+```sql
+SELECT *
+FROM state_climate;
+```
+
+**Result:** Verified table structure and available climate metrics.
+
+---
+
+### 2️⃣ Running Average Temperature by State
+
+```sql
+SELECT 
+  state,
+  year,
+  tempf,
+  AVG(tempf) OVER (PARTITION BY state ORDER BY year) AS running_avg_temp
+FROM state_climate;
+```
+
+**Result:** Reveals gradual warming trends within many states over time.
+
+---
+
+### 3️⃣ Lowest Recorded Temperature per State
+
+```sql
+SELECT 
+  state,
+  year,
+  tempf,
+  MIN(tempf) OVER (PARTITION BY state) AS lowest_temp
+FROM state_climate;
+```
+
+**Result:** Coldest years tend to occur earlier in the historical record for most states.
+
+---
+
+### 4️⃣ Highest Recorded Temperature per State
+
+```sql
+SELECT 
+  state,
+  year,
+  tempf,
+  MAX(tempf) OVER (PARTITION BY state) AS highest_temp
+FROM state_climate;
+```
+
+**Result:** Warmest years are generally more recent, aligning with long-term warming patterns.
+
+---
+
+### 5️⃣ Year-over-Year Temperature Change
+
+```sql
+SELECT 
+  state,
+  year,
+  tempf,
+  tempf - LAG(tempf) OVER (PARTITION BY state ORDER BY year) AS change_in_temp
+FROM state_climate
+WHERE year IS NOT NULL;
+```
+
+**Result:** Identifies sharp annual temperature shifts, with some regions showing higher volatility.
+
+---
+
+### 6️⃣ Coldest Temperatures on Record (Global Ranking)
+
+```sql
+SELECT 
+  state,
+  year,
+  tempf,
+  RANK() OVER (ORDER BY tempf ASC) AS coldest_rank
+FROM state_climate;
+```
+
+**Result:** The coldest-ranked years are largely historic rather than recent.
+
+---
+
+### 7️⃣ Warmest Year per State
+
+```sql
+SELECT 
+  state,
+  year,
+  tempf,
+  RANK() OVER (PARTITION BY state ORDER BY tempf DESC) AS warmest_rank
+FROM state_climate;
+```
+
+**Result:** Most states’ warmest years appear in the more recent decades.
+
+---
+
+### 8️⃣ Temperature Quartiles by State
+
+```sql
+SELECT
+  NTILE(4) OVER (PARTITION BY state ORDER BY tempf ASC) AS quartile,
+  year,
+  state,
+  tempf
+FROM state_climate;
+```
+
+**Result:** Coldest quartiles are dominated by older years, indicating historical cooler climates.
+
+---
+
+### 9️⃣ Temperature Quintiles (Overall)
+
+```sql
+SELECT
+  NTILE(5) OVER (ORDER BY tempf ASC) AS quintile,
+  year,
+  state,
+  tempf
+FROM state_climate;
+```
+
+**Result:** The coldest quintile spans fewer states and earlier years, highlighting nationwide cold extremes rather than state-level variation.
+
+---
+
+## 📈 Key Insights
+
+* Running averages suggest long-term warming trends across many states.
+* Coldest years tend to be historic, while warmest years are increasingly recent.
+* Some states experience significant year-to-year temperature volatility.
+* Global quintiles highlight nationwide cold extremes, unlike state-partitioned quartiles.
+
+---
+
+## 🧰 Skills Demonstrated
+
+* Window functions (`AVG`, `MIN`, `MAX`, `LAG`)
+* Ranking with `RANK()`
+* Distribution analysis using `NTILE()`
+* Partitioning and ordering data by time and geography
+* Climate-focused analytical reasoning
+
+---
+
+📎 *Project completed as part of a Codecademy SQL course and adapted for portfolio presentation.*
