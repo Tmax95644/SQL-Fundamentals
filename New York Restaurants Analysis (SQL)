@@ -1,0 +1,196 @@
+# New York Restaurants Analysis (SQL)
+
+## 📌 Project Overview
+
+This project explores a curated dataset of New York City restaurants to answer practical dining-related questions using SQL. The analysis focuses on discovering cuisine options, identifying high-rated and premium restaurants, locating nearby delivery spots, and creating rankings based on customer reviews.
+
+The goal is to demonstrate core SQL querying skills while producing insights that mirror real-world decision-making (e.g. where to eat, what’s highly rated, and what fits specific criteria).
+
+---
+
+## 🗂 Dataset Description
+
+**Table:** `nomnom`
+
+| Column         | Description             |
+| -------------- | ----------------------- |
+| `name`         | Restaurant name         |
+| `neighborhood` | NYC neighborhood        |
+| `cuisine`      | Type of cuisine         |
+| `review`       | Customer review score   |
+| `price`        | Price range ($–$$$$$)   |
+| `health`       | Health inspection grade |
+
+Rows: **53 restaurants**
+
+---
+
+## 🧠 Analytical Questions
+
+1. What neighborhoods and cuisine types are represented?
+2. Which restaurants meet specific dining needs (e.g. Chinese takeout, fancy Italian dining)?
+3. Which restaurants are highly rated (4★+)?
+4. Which nearby restaurants deliver to central locations?
+5. Which restaurants are missing health grades?
+6. What are the top 10 restaurants by review score?
+7. How can numeric review scores be translated into qualitative ratings?
+
+---
+
+## ⚙️ SQL Queries & Results
+
+### 1️⃣ Explore the Dataset
+
+```sql
+SELECT *
+FROM nomnom;
+```
+
+**Result:** Confirmed table schema and column names.
+
+---
+
+### 2️⃣ Distinct Neighborhoods & Cuisines
+
+```sql
+SELECT DISTINCT neighborhood
+FROM nomnom;
+```
+
+```sql
+SELECT DISTINCT cuisine
+FROM nomnom;
+```
+
+**Result:** Restaurants span **Brooklyn, Midtown, Downtown, Uptown, Chinatown, and Queens**, with cuisines ranging from **Chinese and Italian** to **Ethiopian and Soul Food**.
+
+---
+
+### 3️⃣ Chinese Takeout Options
+
+```sql
+SELECT name
+FROM nomnom
+WHERE cuisine = 'Chinese';
+```
+
+**Result:** Multiple strong options across Midtown, Downtown, Chinatown, Brooklyn, and Queens.
+
+---
+
+### 4️⃣ Highly Rated Restaurants (4★ and Above)
+
+```sql
+SELECT name
+FROM nomnom
+WHERE review >= 4;
+```
+
+**Result:** The majority of restaurants score highly, indicating a generally strong dataset of well-reviewed venues.
+
+---
+
+### 5️⃣ Fancy Italian Dinner Spots ($$$)
+
+```sql
+SELECT name
+FROM nomnom
+WHERE cuisine = 'Italian' AND price = '$$$';
+```
+
+**Result:** Identified several premium Italian restaurants suitable for special occasions.
+
+---
+
+### 6️⃣ Restaurant Name Search (Wildcard)
+
+```sql
+SELECT name
+FROM nomnom
+WHERE name LIKE '%meatball%';
+```
+
+**Result:** Successfully identified **The Meatball Shop** using partial text matching.
+
+---
+
+### 7️⃣ Nearby Delivery-Friendly Locations
+
+```sql
+SELECT name
+FROM nomnom
+WHERE neighborhood IN ('Midtown', 'Downtown', 'Chinatown');
+```
+
+**Result:** A wide selection of centrally located restaurants suitable for delivery.
+
+---
+
+### 8️⃣ Health Grade Pending Restaurants
+
+```sql
+SELECT name
+FROM nomnom
+WHERE health IS NULL;
+```
+
+**Result:** Identified restaurants with missing health inspection grades for further review.
+
+---
+
+### 9️⃣ Top 10 Restaurants by Review Score
+
+```sql
+SELECT *
+FROM (
+  SELECT
+    name,
+    review,
+    RANK() OVER (ORDER BY review DESC) AS top_rank
+  FROM nomnom
+) ranked
+WHERE top_rank <= 10;
+```
+
+**Result:** Top-ranked restaurants include **Bunna Cafe**, **Russ & Daughters**, and **Lighthouse**, all scoring **4.6**.
+
+---
+
+### 🔟 Review Classification Using CASE
+
+```sql
+SELECT name,
+  CASE
+    WHEN review > 4.5 THEN 'Extraordinary'
+    WHEN review > 4 THEN 'Excellent'
+    WHEN review > 3 THEN 'Good'
+    WHEN review > 2 THEN 'Fair'
+    ELSE 'Poor'
+  END AS Review
+FROM nomnom;
+```
+
+**Result:** Numeric ratings were successfully converted into qualitative performance categories.
+
+---
+
+## 📈 Key Insights
+
+* Downtown and Midtown host the highest concentration of delivery-friendly restaurants.
+* Italian and Chinese cuisines are strongly represented, especially among higher-priced venues.
+* Most restaurants score **4★ or above**, suggesting a curated or quality-biased dataset.
+* Window functions and CASE logic enable more expressive rankings and categorisation.
+
+---
+
+## 🧰 Skills Demonstrated
+
+* Data exploration with `SELECT` and `DISTINCT`
+* Filtering with `WHERE`, `IN`, and `LIKE`
+* Ranking with window functions (`RANK()`)
+* Conditional logic using `CASE`
+* Translating raw data into decision-friendly insights
+
+---
+
+📎 *Project completed as part of a Codecademy SQL course and adapted for portfolio presentation.*
